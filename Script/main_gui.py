@@ -40,7 +40,7 @@ class ImageConverter(QWidget):
         # Create a combo box for choosing the output format
         self.format_combo = QComboBox()
         # Add some common image formats to the combo box
-        self.format_combo.addItems(['TIFF', 'BMP', 'PNG', 'GIF', 'JPEG'])
+        self.format_combo.addItems(['PNG', 'TIFF', 'GIF'])
         # Add the combo box to the layout
         self.layout.addWidget(self.format_combo, 4, 1)
 
