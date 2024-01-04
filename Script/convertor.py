@@ -1,8 +1,8 @@
+import os
 import sys
-
-import numpy as np
-
+import zipfile
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Convertor:
@@ -13,18 +13,18 @@ class Convertor:
         self.convert()
 
     def convert(self):
+        if self.input_file[-4:] == "rasx":
+            with zipfile.ZipFile(self.input_file, 'r') as zip_file:
+                # Extract the Image.bin file to the current directory
+                zip_file.extract("Data0/Image0.bin")
+            self.input_file = os.path.join("Data0", "Image0.bin")
         # Read data from the binary file
         data = self.read_binary_file(self.input_file)
 
         # Create a 2D array
         array_2d = self.create_2d_array(data)
 
-        # Display the 2D array as a grayscale image
-        self.display_as_grayscale_image(array_2d)
-
-        #height, width = np.array(data.shape, dtype=float) / dpi
-
-        fig = plt.figure(figsize=(385/10, 775/10), dpi=10)
+        fig = plt.figure(figsize=(775/10, 385/10), dpi=10)
 
         ax = fig.add_axes([0, 0, 1, 1])
 
@@ -32,7 +32,8 @@ class Convertor:
 
         ax.imshow(array_2d, interpolation='none')
 
-        fig.savefig('test.tif', dpi=10)
+        fig.savefig(self.output_file, dpi=10)
+        plt.close()
 
 
     def read_binary_file(self, file_name):
