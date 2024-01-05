@@ -14,11 +14,25 @@ class Convertor:
         self.contrast = contrast
         self.convert()
 
+    def get_coordinates(self, filename):
+        # open the file in read mode
+        with open(filename, "r") as f:
+            # loop through the lines until the 808th line
+            for i in range(808):
+                line = f.readline()
+            # split the line by whitespace and convert to integers
+            line = line.split(">")[1]
+            line = line.split("<")[0]
+            x, y = line.split(" ")
+            # return the x and y values
+            return int(x), int(y)
+
     def create_2d_array(self, data):
 
         # Reshape the 1D array into a 2D array of shape (200, 100)
-
-        array_2d = data.reshape((385, 775))
+        file = os.path.join(user_pictures_dir(), "Data0", "MesurementConditions0.xml")
+        x, y = self.get_coordinates(file)
+        array_2d = data.reshape((y, x))
 
         return array_2d
 
@@ -27,7 +41,9 @@ class Convertor:
             with zipfile.ZipFile(self.input_file, 'r') as zip_file:
                 # Extract the Image.bin file to the current directory
                 zip_file.extract("Data0/Image0.bin", user_pictures_dir())
+                zip_file.extract("Data0/MesurementConditions0.xml", user_pictures_dir())
             self.input_file = os.path.join(user_pictures_dir(), "Data0", "Image0.bin")
+            # resolution =  #MesurementConditions0 808 line
 
         # Read data from the binary file
         data = self.read_binary_file(self.input_file)

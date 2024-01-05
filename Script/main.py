@@ -1,3 +1,5 @@
+# version: 0.0.2
+
 # Import PyQt6 modules
 from PyQt6.QtWidgets import QApplication, QSpinBox, QWidget, QFileDialog, QPushButton, QLabel, QComboBox, QGridLayout
 import shutil, os
