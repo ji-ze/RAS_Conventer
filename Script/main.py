@@ -1,5 +1,5 @@
 # Import PyQt6 modules
-from PyQt6.QtWidgets import QApplication, QWidget, QFileDialog, QPushButton, QLabel, QComboBox, QGridLayout
+from PyQt6.QtWidgets import QApplication, QSpinBox, QWidget, QFileDialog, QPushButton, QLabel, QComboBox, QGridLayout
 import shutil, os
 from platformdirs import user_pictures_dir
 from convertor import Convertor as Convert
@@ -30,6 +30,7 @@ class ImageConverter(QWidget):
         self.output_button.clicked.connect(self.choose_output)
         # Add the button to the layout
         self.layout.addWidget(self.output_button, 2, 0, 1, 2)
+
         # Create a label for showing the output directory
         self.output_label = QLabel('No output directory chosen')
         # Add the label to the layout
@@ -38,23 +39,37 @@ class ImageConverter(QWidget):
         self.format_label = QLabel('Choose Output Format')
         # Add the label to the layout
         self.layout.addWidget(self.format_label, 4, 0)
+
         # Create a combo box for choosing the output format
         self.format_combo = QComboBox()
+        self.format_combo.setToolTip("Choose a format of output images")
         # Add some common image formats to the combo box
         self.format_combo.addItems(['PNG', 'TIFF', 'GIF'])
         # Add the combo box to the layout
         self.layout.addWidget(self.format_combo, 4, 1)
+
+        self.label4 = QLabel('Contrast of image:')
+        self.layout.addWidget(self.label4, 5, 0)
+
+        self.spinbox = QSpinBox()
+
+        self.spinbox.setRange(1, 10000)
+        self.spinbox.setValue(3000)  # Set the default value
+        self.spinbox.setToolTip("The signal is normally low. Write 1 for the original image.")
+        self.layout.addWidget(self.spinbox, 5, 1)
+
+
 
         # Create a button for converting the files
         self.convert_button = QPushButton('Convert')
         # Connect the button to a function
         self.convert_button.clicked.connect(self.convert_files)
         # Add the button to the layout
-        self.layout.addWidget(self.convert_button, 5, 0, 1, 2)
+        self.layout.addWidget(self.convert_button, 6, 0, 1, 2)
         # Create a label for showing the conversion status
         self.status_label = QLabel('Ready')
         # Add the label to the layout
-        self.layout.addWidget(self.status_label, 6, 0, 1, 2)
+        self.layout.addWidget(self.status_label, 7, 0, 1, 2)
         # Set the layout for the widget
         self.setLayout(self.layout)
         # Initialize some attributes
@@ -99,6 +114,7 @@ class ImageConverter(QWidget):
         # Get the output format from the combo box
         self.output_format = self.format_combo.currentText()
         # Loop through the selected files
+        contrast = self.spinbox.value()
         for file in self.files:
             # Try to convert the file
             try:
@@ -107,7 +123,7 @@ class ImageConverter(QWidget):
                 # Construct the output file path
                 output_file = f'{self.output_dir}/{file_name}.{self.output_format.lower()}'
                 # Convert the image to the output format
-                Convert(file, output_file)
+                Convert(file, output_file, contrast)
                 # Increment the converted counter
                 self.converted += 1
             # Handle any exceptions

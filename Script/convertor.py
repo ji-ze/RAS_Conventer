@@ -8,9 +8,10 @@ from platformdirs import user_pictures_dir
 
 class Convertor:
 
-    def __init__(self, input_file, output_file):
+    def __init__(self, input_file, output_file, contrast):
         self.input_file = input_file
         self.output_file = output_file
+        self.contrast = contrast
         self.convert()
 
     def create_2d_array(self, data):
@@ -37,7 +38,7 @@ class Convertor:
         # Display the 2D array as a grayscale image
         image = (np.flipud(array_2d))
 
-        pillow_image = Image.fromarray(image * 3500)
+        pillow_image = Image.fromarray(image * self.contrast)
 
         pillow_image.save(self.output_file)
 
