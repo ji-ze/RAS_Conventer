@@ -3,6 +3,7 @@ import sys
 import zipfile
 import numpy as np
 from PIL import Image
+from platformdirs import user_pictures_dir
 
 
 class Convertor:
@@ -24,8 +25,8 @@ class Convertor:
         if self.input_file[-4:] == "rasx":
             with zipfile.ZipFile(self.input_file, 'r') as zip_file:
                 # Extract the Image.bin file to the current directory
-                zip_file.extract("Data0/Image0.bin")
-            self.input_file = os.path.join("Data0", "Image0.bin")
+                zip_file.extract("Data0/Image0.bin", user_pictures_dir())
+            self.input_file = os.path.join(user_pictures_dir(), "Data0", "Image0.bin")
 
         # Read data from the binary file
         data = self.read_binary_file(self.input_file)
@@ -36,8 +37,8 @@ class Convertor:
         # Display the 2D array as a grayscale image
         image = (np.flipud(array_2d))
 
-        pillow_image = Image.fromarray(image * 3000)
-        print(self.output_file)
+        pillow_image = Image.fromarray(image * 3500)
+
         pillow_image.save(self.output_file)
 
     def read_binary_file(self, file_name):

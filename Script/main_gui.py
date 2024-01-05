@@ -1,6 +1,7 @@
 # Import PyQt6 modules
 from PyQt6.QtWidgets import QApplication, QWidget, QFileDialog, QPushButton, QLabel, QComboBox, QGridLayout
-
+import shutil, os
+from platformdirs import user_pictures_dir
 from convertor import Convertor as Convert
 
 
@@ -114,6 +115,8 @@ class ImageConverter(QWidget):
                 # Show the error message
                 self.status_label.setText(f'Error: {e}')
                 return
+        if os.path.exists(os.path.join(user_pictures_dir(), "Data0")):
+            shutil.rmtree(os.path.join(user_pictures_dir(), "Data0"))
         # Show the conversion status
         self.status_label.setText(f'Converted {self.converted} files')
 

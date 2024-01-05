@@ -1,14 +1,15 @@
 # Import PyQt6 modules
 from PyQt6.QtWidgets import QApplication, QWidget, QFileDialog, QPushButton, QLabel, QComboBox, QGridLayout
-
+import shutil
 import os
 import sys
 import zipfile
 import numpy as np
 from PIL import Image
+from platformdirs import user_pictures_dir
 
 
-class Convert:
+class Convertor:
 
     def __init__(self, input_file, output_file):
         self.input_file = input_file
@@ -27,8 +28,8 @@ class Convert:
         if self.input_file[-4:] == "rasx":
             with zipfile.ZipFile(self.input_file, 'r') as zip_file:
                 # Extract the Image.bin file to the current directory
-                zip_file.extract("Data0/Image0.bin")
-            self.input_file = os.path.join("Data0", "Image0.bin")
+                zip_file.extract("Data0/Image0.bin", user_pictures_dir())
+            self.input_file = os.path.join(user_pictures_dir(), "Data0", "Image0.bin")
 
         # Read data from the binary file
         data = self.read_binary_file(self.input_file)
@@ -39,8 +40,8 @@ class Convert:
         # Display the 2D array as a grayscale image
         image = (np.flipud(array_2d))
 
-        pillow_image = Image.fromarray(image * 3000)
-        print(self.output_file)
+        pillow_image = Image.fromarray(image * 3500)
+
         pillow_image.save(self.output_file)
 
     def read_binary_file(self, file_name):
@@ -170,7 +171,7 @@ class ImageConverter(QWidget):
                 # Construct the output file path
                 output_file = f'{self.output_dir}/{file_name}.{self.output_format.lower()}'
                 # Convert the image to the output format
-                Convert(file, output_file)
+                Convertor(file, output_file)
                 # Increment the converted counter
                 self.converted += 1
             # Handle any exceptions
@@ -178,6 +179,8 @@ class ImageConverter(QWidget):
                 # Show the error message
                 self.status_label.setText(f'Error: {e}')
                 return
+        if os.path.exists(os.path.join(user_pictures_dir(), "Data0")):
+            shutil.rmtree(os.path.join(user_pictures_dir(), "Data0"))
         # Show the conversion status
         self.status_label.setText(f'Converted {self.converted} files')
 
