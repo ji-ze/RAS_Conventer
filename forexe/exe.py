@@ -1,6 +1,9 @@
+# version: 0.0.2
+
 # Import PyQt6 modules
-from PyQt6.QtWidgets import QApplication, QWidget, QFileDialog, QPushButton, QLabel, QComboBox, QGridLayout
-import shutil
+from PyQt6.QtWidgets import QApplication, QSpinBox, QWidget, QFileDialog, QPushButton, QLabel, QComboBox, QGridLayout
+import shutil, os
+from platformdirs import user_pictures_dir
 import os
 import sys
 import zipfile
@@ -11,16 +14,31 @@ from platformdirs import user_pictures_dir
 
 class Convertor:
 
-    def __init__(self, input_file, output_file):
+    def __init__(self, input_file, output_file, contrast):
         self.input_file = input_file
         self.output_file = output_file
+        self.contrast = contrast
         self.convert()
+
+    def get_coordinates(self, filename):
+        # open the file in read mode
+        with open(filename, "r") as f:
+            # loop through the lines until the 808th line
+            for i in range(808):
+                line = f.readline()
+            # split the line by whitespace and convert to integers
+            line = line.split(">")[1]
+            line = line.split("<")[0]
+            x, y = line.split(" ")
+            # return the x and y values
+            return int(x), int(y)
 
     def create_2d_array(self, data):
 
         # Reshape the 1D array into a 2D array of shape (200, 100)
-
-        array_2d = data.reshape((385, 775))
+        file = os.path.join(user_pictures_dir(), "Data0", "MesurementConditions0.xml")
+        x, y = self.get_coordinates(file)
+        array_2d = data.reshape((y, x))
 
         return array_2d
 
@@ -29,7 +47,9 @@ class Convertor:
             with zipfile.ZipFile(self.input_file, 'r') as zip_file:
                 # Extract the Image.bin file to the current directory
                 zip_file.extract("Data0/Image0.bin", user_pictures_dir())
+                zip_file.extract("Data0/MesurementConditions0.xml", user_pictures_dir())
             self.input_file = os.path.join(user_pictures_dir(), "Data0", "Image0.bin")
+            # resolution =  #MesurementConditions0 808 line
 
         # Read data from the binary file
         data = self.read_binary_file(self.input_file)
@@ -40,7 +60,7 @@ class Convertor:
         # Display the 2D array as a grayscale image
         image = (np.flipud(array_2d))
 
-        pillow_image = Image.fromarray(image * 3500)
+        pillow_image = Image.fromarray(image * self.contrast)
 
         pillow_image.save(self.output_file)
 
@@ -69,6 +89,7 @@ class Convertor:
             sys.exit(1)
 
 
+
 # Define a custom widget class
 class ImageConverter(QWidget):
     def __init__(self):
@@ -94,6 +115,7 @@ class ImageConverter(QWidget):
         self.output_button.clicked.connect(self.choose_output)
         # Add the button to the layout
         self.layout.addWidget(self.output_button, 2, 0, 1, 2)
+
         # Create a label for showing the output directory
         self.output_label = QLabel('No output directory chosen')
         # Add the label to the layout
@@ -102,23 +124,37 @@ class ImageConverter(QWidget):
         self.format_label = QLabel('Choose Output Format')
         # Add the label to the layout
         self.layout.addWidget(self.format_label, 4, 0)
+
         # Create a combo box for choosing the output format
         self.format_combo = QComboBox()
+        self.format_combo.setToolTip("Choose a format of output images")
         # Add some common image formats to the combo box
         self.format_combo.addItems(['PNG', 'TIFF', 'GIF'])
         # Add the combo box to the layout
         self.layout.addWidget(self.format_combo, 4, 1)
+
+        self.label4 = QLabel('Contrast of image:')
+        self.layout.addWidget(self.label4, 5, 0)
+
+        self.spinbox = QSpinBox()
+
+        self.spinbox.setRange(1, 10000)
+        self.spinbox.setValue(3000)  # Set the default value
+        self.spinbox.setToolTip("The signal is normally low. Write 1 for the original image.")
+        self.layout.addWidget(self.spinbox, 5, 1)
+
+
 
         # Create a button for converting the files
         self.convert_button = QPushButton('Convert')
         # Connect the button to a function
         self.convert_button.clicked.connect(self.convert_files)
         # Add the button to the layout
-        self.layout.addWidget(self.convert_button, 5, 0, 1, 2)
+        self.layout.addWidget(self.convert_button, 6, 0, 1, 2)
         # Create a label for showing the conversion status
         self.status_label = QLabel('Ready')
         # Add the label to the layout
-        self.layout.addWidget(self.status_label, 6, 0, 1, 2)
+        self.layout.addWidget(self.status_label, 7, 0, 1, 2)
         # Set the layout for the widget
         self.setLayout(self.layout)
         # Initialize some attributes
@@ -163,6 +199,7 @@ class ImageConverter(QWidget):
         # Get the output format from the combo box
         self.output_format = self.format_combo.currentText()
         # Loop through the selected files
+        contrast = self.spinbox.value()
         for file in self.files:
             # Try to convert the file
             try:
@@ -171,7 +208,7 @@ class ImageConverter(QWidget):
                 # Construct the output file path
                 output_file = f'{self.output_dir}/{file_name}.{self.output_format.lower()}'
                 # Convert the image to the output format
-                Convertor(file, output_file)
+                Convertor(file, output_file, contrast)
                 # Increment the converted counter
                 self.converted += 1
             # Handle any exceptions
