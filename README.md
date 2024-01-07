@@ -1,4 +1,4 @@
-# RASX Conventer
+# Rigaku RASX Conventer
 ## Abouth
 This is an images converter from the new Rigaku format rasx to png, tiff and bmp. The application was developed by Jiri Zelenka in the Institute of Physics of the Czech Academy of Sciences in 2024.
 

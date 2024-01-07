@@ -15,7 +15,7 @@ class ImageConverter(QWidget):
     def __init__(self):
         super().__init__()
         # Set the window title and size
-        self.setWindowTitle("Rasx Converter")
+        self.setWindowTitle("Rigaku RASX Converter")
         self.resize(400, 300)
 
         # Create a grid layout
@@ -158,7 +158,7 @@ class ImageConverter(QWidget):
             # Try to convert the file
             try:
                 # Get the file name without the extension
-                file_name = file.split('/')[-1][:-4]
+                file_name = file.split('/')[-1][:-5]
                 # Construct the output file path
                 output_file = f'{self.output_dir}/{file_name}.{self.output_format.lower()}'
                 # Convert the rasx image to the output format

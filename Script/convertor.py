@@ -37,13 +37,11 @@ class Convertor:
         return array_2d
 
     def convert(self):
-        if self.input_file[-4:] == "rasx":
-            with zipfile.ZipFile(self.input_file, 'r') as zip_file:
-                # Extract the Image.bin file to the current directory
-                zip_file.extract("Data0/Image0.bin", user_pictures_dir())
-                zip_file.extract("Data0/MesurementConditions0.xml", user_pictures_dir())
-            self.input_file = os.path.join(user_pictures_dir(), "Data0", "Image0.bin")
-            # resolution =  #MesurementConditions0 808 line
+        with zipfile.ZipFile(self.input_file, 'r') as zip_file:
+            # Extract the Image.bin file to the current directory
+            zip_file.extract("Data0/Image0.bin", user_pictures_dir())
+            zip_file.extract("Data0/MesurementConditions0.xml", user_pictures_dir())
+        self.input_file = os.path.join(user_pictures_dir(), "Data0", "Image0.bin")
 
         # Read data from the binary file
         data = self.read_binary_file(self.input_file)

@@ -47,13 +47,11 @@ class Convert:
         return array_2d
 
     def convert(self):
-        if self.input_file[-4:] == "rasx":
-            with zipfile.ZipFile(self.input_file, 'r') as zip_file:
-                # Extract the Image.bin file to the current directory
-                zip_file.extract("Data0/Image0.bin", user_pictures_dir())
-                zip_file.extract("Data0/MesurementConditions0.xml", user_pictures_dir())
-            self.input_file = os.path.join(user_pictures_dir(), "Data0", "Image0.bin")
-            # resolution =  #MesurementConditions0 808 line
+        with zipfile.ZipFile(self.input_file, 'r') as zip_file:
+            # Extract the Image.bin file to the current directory
+            zip_file.extract("Data0/Image0.bin", user_pictures_dir())
+            zip_file.extract("Data0/MesurementConditions0.xml", user_pictures_dir())
+        self.input_file = os.path.join(user_pictures_dir(), "Data0", "Image0.bin")
 
         # Read data from the binary file
         data = self.read_binary_file(self.input_file)
@@ -98,7 +96,7 @@ class ImageConverter(QWidget):
     def __init__(self):
         super().__init__()
         # Set the window title and size
-        self.setWindowTitle("Rasx Converter")
+        self.setWindowTitle("Rigaku RASX Converter")
         self.resize(400, 300)
 
         # Create a grid layout
@@ -241,7 +239,7 @@ class ImageConverter(QWidget):
             # Try to convert the file
             try:
                 # Get the file name without the extension
-                file_name = file.split('/')[-1][:-4]
+                file_name = file.split('/')[-1][:-5]
                 # Construct the output file path
                 output_file = f'{self.output_dir}/{file_name}.{self.output_format.lower()}'
                 # Convert the rasx image to the output format
@@ -269,4 +267,3 @@ converter = ImageConverter()
 converter.show()
 # Run the application
 app.exec()
-
