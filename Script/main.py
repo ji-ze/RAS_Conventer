@@ -32,6 +32,7 @@ class ImageConverter(QWidget):
         self.select_button = QPushButton('Select Files')
         # Connect the button to a function
         self.select_button.clicked.connect(self.select_files)
+        self.select_button.setToolTip("Click to open a dialog to choose a input file(s)")
         # Add the button to the layout
         self.layout.addWidget(self.select_button, 1, 0, 1, 2)
 
@@ -44,6 +45,7 @@ class ImageConverter(QWidget):
         self.output_button = QPushButton('Choose Output Directory')
         # Connect the button to a function
         self.output_button.clicked.connect(self.choose_output)
+        self.output_button.setToolTip("Click to open a dialog")
         # Add the button to the layout
         self.layout.addWidget(self.output_button, 3, 0, 1, 2)
 
@@ -72,18 +74,21 @@ class ImageConverter(QWidget):
 
         self.spinbox.setRange(1, 10000)
         self.spinbox.setValue(3000)  # Set the default value
-        self.spinbox.setToolTip("The signal is normally low. Write 1 for the original image.")
+        self.spinbox.setToolTip("The signal is normally low. The bigger number than 1 increases contrast of the image."
+                                " Write 1 for the original image.")
         self.layout.addWidget(self.spinbox, 6, 1)
 
         # Create a button for converting the files
         self.convert_button = QPushButton('Convert')
         # Connect the button to a function
         self.convert_button.clicked.connect(self.convert_files)
+        self.convert_button.setToolTip("Click to start conversion")
         # Add the button to the layout
         self.layout.addWidget(self.convert_button, 7, 0, 1, 2)
 
         # Create a label for showing the conversion status
         self.status_label = QLabel('Ready')
+        self.status_label.setToolTip("The status of the application")
         # Add the label to the layout
         self.layout.addWidget(self.status_label, 8, 0, 1, 2)
 
@@ -96,6 +101,7 @@ class ImageConverter(QWidget):
             '<a href="https://github.com/ji-ze/RAS_Conventer/">Project webpage</a>')
         self.weblink.setOpenExternalLinks(True)
         self.weblink.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.weblink.setToolTip("Click to open the HitHub project")
         self.layout.addWidget(self.weblink, 10, 1)
 
         # Set the layout for the widget
